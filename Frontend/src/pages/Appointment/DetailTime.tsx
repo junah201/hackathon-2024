@@ -87,7 +87,9 @@ const TimePicker = ({
   return (
     <Box
       sx={{
-        backgroundColor: 'primary.light',
+        backgroundColor: available_time.available
+          ? 'primary.light'
+          : 'secondary.main',
         padding: 2,
         borderRadius: 1,
         display: 'flex',
@@ -99,7 +101,11 @@ const TimePicker = ({
       <Typography fontWeight="bold" fontSize="16px">
         {start} ~ {end}
       </Typography>
-      <Button variant="contained" onClick={mutate}>
+      <Button
+        variant="contained"
+        onClick={mutate}
+        disabled={!available_time.available}
+      >
         Select
       </Button>
     </Box>

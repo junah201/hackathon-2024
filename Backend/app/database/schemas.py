@@ -94,6 +94,7 @@ Professor.update_forward_refs()
 
 class AvailableTime(BaseModel):
     start_time: datetime
+    available: bool
 
 
 class AvailableTimeList(BaseModel):

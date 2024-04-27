@@ -70,9 +70,9 @@ const SearchResult = ({ filter }: SearchResultProps) => {
         cell: (info: CellContext<Professor, number>) => {
           const id = info.getValue();
           return (
-            <Button variant="contained">
-              <Link to={`/appointment/${id}`}>Appointment</Link>
-            </Button>
+            <Link to={`/appointment/${id}`}>
+              <Button variant="contained">Appointment</Button>
+            </Link>
           );
         },
       },
@@ -90,7 +90,6 @@ const SearchResult = ({ filter }: SearchResultProps) => {
         }}
         queryFn={(page, size) => getAllProfessor(page, size, filter)}
         columns={columns}
-        showTotal
       />
     </>
   );

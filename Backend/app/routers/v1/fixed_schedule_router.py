@@ -1,6 +1,7 @@
 import datetime
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from matplotlib.style import available
 from starlette import status
 from sqlalchemy.orm import Session
 
@@ -66,16 +67,24 @@ def get_all_available_time(
 
         while start_time < end_time:
             if start_time.strftime("%H:%M") not in unavailable_time_list:
-                available_time_list.append(start_time)
+                available_time_list.append(
+                    schemas.AvailableTime(
+                        start_time=start_time,
+                        available=True
+                    )
+                )
+            else:
+                available_time_list.append(
+                    schemas.AvailableTime(
+                        start_time=start_time,
+                        available=False
+                    )
+                )
             start_time += datetime.timedelta(minutes=30)
 
     return schemas.AvailableTimeList(
         total=len(available_time_list),
-        items=[
-            schemas.AvailableTime(
-                start_time=available_time
-            ) for available_time in available_time_list
-        ]
+        items=available_time_list
     )
 
 
