@@ -2,9 +2,10 @@ import { AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import { AxiosErr, removeCookie } from '.';
+import { removeCookie } from '.';
+import { AxiosErr } from './types';
 
-import { ACCESS_TOEKN } from '@/constants';
+import { ACCESS_TOKEN } from '@/constants';
 
 export { QueryClient, QueryClientProvider } from 'react-query';
 
@@ -50,10 +51,11 @@ export const useCustomQuery = <DataT = any>(
     },
     onError: (err: AxiosErr) => {
       if (err.response?.status === 401) {
-        enqueueSnackbar(`로그인 세션이 만료되었습니다.`, {
+        enqueueSnackbar(`Login session has expired`, {
           variant: 'error',
         });
-        removeCookie(ACCESS_TOEKN.key);
+        removeCookie(ACCESS_TOKEN.key);
+        // window.location.href = '/login';
         location.reload();
         return;
       }
@@ -62,7 +64,7 @@ export const useCustomQuery = <DataT = any>(
         options.onError(err);
       } else {
         const message =
-          options.ErrorMessage || `알 수 없는 에러가 발생했습니다.`;
+          options.ErrorMessage || `Unknown error has occured`;
         const status = err.response?.status ? `${err.response?.status} ` : '';
         const error =
           err.response?.data?.detail || err.message || JSON.stringify(err);
@@ -118,9 +120,10 @@ export const useCustomMutation = <DataT>(
     },
     onError: (err: AxiosErr) => {
       if (err.response?.status === 401) {
-        enqueueSnackbar(`로그인 세션이 만료되었습니다.`, {
+        enqueueSnackbar(`Login session has expired`, {
           variant: 'error',
         });
+        // window.location.href = '/login';
         location.reload();
         return;
       }
@@ -128,13 +131,11 @@ export const useCustomMutation = <DataT>(
       if (options.onError) {
         options.onError(err);
       } else {
-        const message =
-          options.ErrorMessage || `알 수 없는 에러가 발생했습니다.`;
         const status = err.response?.status ? `${err.response?.status} ` : '';
-        const error =
-          err.response?.data?.message || err.message || JSON.stringify(err);
+        const message =
+          err.response?.data?.detail || `Unknown error has occured`;
 
-        enqueueSnackbar(`${message} (${status} ${error})`, {
+        enqueueSnackbar(`${message} (${status})`, {
           variant: 'error',
         });
       }

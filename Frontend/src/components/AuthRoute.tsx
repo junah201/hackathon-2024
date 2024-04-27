@@ -2,7 +2,7 @@ import { useSnackbar } from 'notistack';
 import { useState, useEffect } from 'react';
 import { Navigate, NavigateProps, RouteProps } from 'react-router-dom';
 
-import { ACCESS_TOEKN } from '@/constants';
+import { ACCESS_TOKEN } from '@/constants';
 import { ROUTE } from '@/constants/route';
 import { getCookie } from '@/lib';
 
@@ -18,9 +18,9 @@ export function AuthRoute({ element, ...rest }: AuthRouteProps) {
 
   useEffect(() => {
     const checkValidation = async () => {
-      const token = getCookie(ACCESS_TOEKN.key);
+      const token = getCookie(ACCESS_TOKEN.key);
       if (!token) {
-        enqueueSnackbar('로그인이 필요합니다.', { variant: 'error' });
+        enqueueSnackbar('You need to log in', { variant: 'error' });
       } else {
         setIsAuth(!!token);
       }

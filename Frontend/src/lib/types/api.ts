@@ -28,4 +28,5 @@ export interface ErrDetail {
 
 export type AxiosErr = AxiosError<{
   message: string | ErrDetail | any;
+  detail: string;
 }>;

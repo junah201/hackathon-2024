@@ -1,28 +1,21 @@
-import { Box } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-import Actions from './Actions';
-import Intro from './Intro';
+import MySchedule from './MySchedule';
+import Search from './Search';
 
 const Home = () => {
   const theme = useTheme();
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '80vh',
-        width: '100%',
-        gap: theme.spacing(2),
-        padding: theme.spacing(2),
-      }}
-    >
-      <Intro />
-      <Actions />
-    </Box>
+    <Grid container spacing={theme.spacing(2)}>
+      <Grid item xs={3.5}>
+        <MySchedule />
+      </Grid>
+      <Grid item xs={8.5}>
+        <Search />
+      </Grid>
+    </Grid>
   );
 };
 

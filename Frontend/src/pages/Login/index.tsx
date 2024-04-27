@@ -1,52 +1,73 @@
-import { useSnackbar } from 'notistack';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Button, Grid, Typography, useTheme } from '@mui/material';
+import { useForm } from 'react-hook-form';
+import { useNavigate, Link } from 'react-router-dom';
 
-import { login } from '@/api/discord';
-import { ROUTE } from '@/constants';
-import { ACCESS_TOEKN } from '@/constants/cookie';
-import { setCookie, getCookie } from '@/lib/Cookie';
-const { VITE_DISCORD_CLIENT_ID } = import.meta.env;
+import { login } from '@/api/student';
+import LoginForm from '@/components/forms/LoginForm';
+import MainCard from '@/components/MainCard';
+import { ROUTE, ACCESS_TOKEN } from '@/constants';
+import { RegisterField } from '@/constants/form';
+import { setCookie, useCustomMutation } from '@/lib';
 
 const Login = () => {
-  const { enqueueSnackbar } = useSnackbar();
+  const theme = useTheme();
   const navigate = useNavigate();
 
-  const token = getCookie(ACCESS_TOEKN.key);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterField, any>();
 
-  if (token) {
-    enqueueSnackbar('이미 로그인 되어있습니다.', { variant: 'error' });
-    navigate(ROUTE.HOME);
-  }
-
-  useEffect(() => {
-    // URL에서 authorization code를 추출
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-
-    if (!code) {
-      const url = `https://discord.com/api/oauth2/authorize?client_id=${VITE_DISCORD_CLIENT_ID}&response_type=code&redirect_uri=https%3A%2F%2Fchzzk.junah.dev%2Flogin&scope=identify+email+guilds`;
-      window.location.href = url;
-      return;
-    }
-
-    const getToken = async () => {
-      const res = await login(code);
-
-      setCookie(ACCESS_TOEKN.key, res.data.access_token, {
-        expires: new Date(Date.now() + res.data.expires_in * 1000),
+  const { mutate, isLoading } = useCustomMutation(login, {
+    SuccessMessage: 'Login success',
+    onSuccess: (res) => {
+      setCookie(ACCESS_TOKEN.key, res.data.access_token, {
+        expires: new Date(Date.now() + 30 * 60 * 1000),
       });
-
       navigate(ROUTE.HOME);
-    };
-
-    getToken();
+    },
+    ErrorMessage: 'Login failed',
   });
 
   return (
-    <>
-      <div>로그인 중...</div>
-    </>
+    <MainCard
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '410px',
+        gap: theme.spacing(2),
+      }}
+    >
+      <Typography variant="h2" fontWeight="bold" textAlign="center">
+        Login
+      </Typography>
+      <form
+        onSubmit={handleSubmit((userInput: RegisterField) => mutate(userInput))}
+      >
+        <Grid container spacing={2}>
+          <LoginForm control={control} />
+        </Grid>
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          disabled={isSubmitting || isLoading}
+          color={!Object.keys(errors)[0] ? 'primary' : 'secondary'}
+          sx={{
+            color: '#ffffff',
+            marginTop: '10px',
+            borderRadius: '5px',
+            fontSize: '20px',
+          }}
+        >
+          Login
+        </Button>
+        <Typography textAlign="center">
+          <Link to={ROUTE.SIGN_UP}>Register</Link>
+        </Typography>
+      </form>
+    </MainCard>
   );
 };
 
